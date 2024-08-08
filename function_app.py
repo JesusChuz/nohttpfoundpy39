@@ -11,8 +11,8 @@ import pandas as pd
 #logging.getLogger().setLevel(logging.INFO)
 
 eventhub_name = "controlroomseventhub-vedhatest"
-#app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
-app = func.FunctionApp()
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+#app = func.FunctionApp()
 
 #@app.route(route="jesumehttp", auth_level=func.AuthLevel.ANONYMOUS)
 #def jesumehttp(req: func.HttpRequest) -> func.HttpResponse:
