@@ -4,8 +4,7 @@
 
 azure-functions
 azure-eventhub
-psycopg2-binary==2.9.9
+psycopg2-binary
 tenacity
-pandas==2.2.1
+pandas
 pytz
-numpy
