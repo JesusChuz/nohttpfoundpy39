@@ -25,15 +25,15 @@ stages:
 
     steps:
 
-    - task: UsePythonVersion@0
-      displayName: 'Use Python 3.9'
-      inputs:
-        versionSpec: 3.9 # Functions V2 supports Python 3.6 as of today
+    #- task: UsePythonVersion@0
+     # displayName: 'Use Python 3.9'
+      #inputs:
+       # versionSpec: 3.9 # Functions V2 supports Python 3.6 as of today
 
-    - bash: |
-        pip install --target="./.python_packages/lib/site-packages" -r ./requirements.txt
-      workingDirectory: $(workingDirectory)
-      displayName: 'Install application dependencies'
+   # - bash: |
+    #    pip install --target="./.python_packages/lib/site-packages" -r ./requirements.txt
+     # workingDirectory: $(workingDirectory)
+      #displayName: 'Install application dependencies'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
