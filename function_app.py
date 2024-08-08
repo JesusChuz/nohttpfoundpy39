@@ -40,7 +40,50 @@ def eventhub_output(req: func.HttpRequest, event: func.Out[str]):
     # logging.info(connection_str)
     # logging.info("***********************************************")
     try:
-        logging.warning(f"Inside try")
+        logging.warning("inside try " + str(req.get_json()))
+        req_body = req.get_json()
+        event_count = 0
+        logging.info("count")
+        logging.info(event_count)
+        for req in req_body:
+            event_count += 1
+            logging.info("count")
+            logging.info(event_count)
+            #logging.info(req["Events"])
+            input_data = req["Events"] if isinstance(req["Events"], list) else []
+            logging.info("input_data")
+            logging.info(input_data)
+            derived_tag_data = calculate(input_data)
+            #logging.info("dertived_tag_data" + str(derived_tag_data))
+
+            id = derived_tag_data["DerivedTag"]
+            is_numeric = derived_tag_data["is_numeric"]
+            is_continuous = derived_tag_data["is_continuous"]
+            is_sampled = derived_tag_data["is_sampled"]
+            t = derived_tag_data["Timestamp"]
+            q = derived_tag_data["Quality"]
+            v = derived_tag_data["CalculatedValue"]
+            eventProcessedUtcTime = derived_tag_data["CollectionTime"]
+            eventEnqueuedUtcTime = derived_tag_data["CollectionTime"]
+            #logging.info("before timestamp")
+            timestamp = timestamp_to_milliseconds(t)
+            #logging.info("after timestamp")
+        
+            event_data = {
+            "id": id,
+            "is_numeric": is_numeric,
+            "is_continuous": is_continuous,
+            "is_sampled": is_sampled,
+            "t": t,
+            "q": q,
+            "v": v,
+            "eventProcessedUtcTime": eventProcessedUtcTime,
+            "eventEnqueuedUtcTime": eventEnqueuedUtcTime,
+            "timestamp": timestamp  # Convert timestamp to milliseconds
+            }
+            #logging.info(event_data)
+            event.set(json.dumps(event_data))
+            logging.info("Event sent to Event Hub successfully.")
         return func.HttpResponse("Events sent to Event Hub successfully.", status_code=200)
     except Exception as e:
         logging.error(f"Error processing request: {str(e)}")
