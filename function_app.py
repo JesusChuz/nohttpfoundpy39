@@ -18,11 +18,13 @@ app = func.FunctionApp()
 #def jesumehttp(req: func.HttpRequest) -> func.HttpResponse:
 
 @app.function_name(name="eventhub_output")
-@app.route(route="eventhub_output", auth_level=func.AuthLevel.ANONYMOUS)
+@app.route(route="eventhub_output")
+#@app.route(route="eventhub_output", auth_level=func.AuthLevel.ANONYMOUS)
 @app.event_hub_output(arg_name="event",
                       event_hub_name=eventhub_name,
                       connection='event_hub_connection')
-def eventhub_output(req: func.HttpRequest, event: func.Out[str]) -> func.HttpResponse:
+def eventhub_output(req: func.HttpRequest, event: func.Out[str]):
+#def eventhub_output(req: func.HttpRequest, event: func.Out[str]) -> func.HttpResponse:
     logging.warning("inside event_hub_output function")
 #def eventhub_output(req: func.HttpRequest):
 
