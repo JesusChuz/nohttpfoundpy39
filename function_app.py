@@ -25,7 +25,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
                       connection='event_hub_connection')
 def eventhub_output(req: func.HttpRequest, event: func.Out[str]):
 #def eventhub_output(req: func.HttpRequest, event: func.Out[str]) -> func.HttpResponse:
-    logging.warning("inside event_hub_output function")
+    logging.warning("testinside event_hub_output function")
 #def eventhub_output(req: func.HttpRequest):
 
 # @app.function_name(name="derived_tags")
