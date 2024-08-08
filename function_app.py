@@ -11,15 +11,18 @@ import pandas as pd
 #logging.getLogger().setLevel(logging.INFO)
 
 eventhub_name = "controlroomseventhub-vedhatest"
+#app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+app = func.FunctionApp()
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+#@app.route(route="jesumehttp", auth_level=func.AuthLevel.ANONYMOUS)
+#def jesumehttp(req: func.HttpRequest) -> func.HttpResponse:
 
 @app.function_name(name="eventhub_output")
-@app.route(route="eventhub_output")
+@app.route(route="eventhub_output", auth_level=func.AuthLevel.ANONYMOUS)
 @app.event_hub_output(arg_name="event",
                       event_hub_name=eventhub_name,
                       connection='event_hub_connection')
-def eventhub_output(req: func.HttpRequest, event: func.Out[str]):
+def eventhub_output(req: func.HttpRequest, event: func.Out[str]) -> func.HttpResponse:
     logging.warning("inside event_hub_output function")
 #def eventhub_output(req: func.HttpRequest):
 
@@ -35,56 +38,11 @@ def eventhub_output(req: func.HttpRequest, event: func.Out[str]):
     # logging.info(connection_str)
     # logging.info("***********************************************")
     try:
-        logging.warning("inside try " + str(req.get_json()))
-        req_body = req.get_json()
-        event_count = 0
-        logging.info("count")
-        logging.info(event_count)
-        for req in req_body:
-            event_count += 1
-            logging.info("count")
-            logging.info(event_count)
-            #logging.info(req["Events"])
-            input_data = req["Events"] if isinstance(req["Events"], list) else []
-            logging.info("input_data")
-            logging.info(input_data)
-            derived_tag_data = calculate(input_data)
-            #logging.info("dertived_tag_data" + str(derived_tag_data))
-
-            id = derived_tag_data["DerivedTag"]
-            is_numeric = derived_tag_data["is_numeric"]
-            is_continuous = derived_tag_data["is_continuous"]
-            is_sampled = derived_tag_data["is_sampled"]
-            t = derived_tag_data["Timestamp"]
-            q = derived_tag_data["Quality"]
-            v = derived_tag_data["CalculatedValue"]
-            eventProcessedUtcTime = derived_tag_data["CollectionTime"]
-            eventEnqueuedUtcTime = derived_tag_data["CollectionTime"]
-            #logging.info("before timestamp")
-            timestamp = timestamp_to_milliseconds(t)
-            #logging.info("after timestamp")
-        
-            event_data = {
-            "id": id,
-            "is_numeric": is_numeric,
-            "is_continuous": is_continuous,
-            "is_sampled": is_sampled,
-            "t": t,
-            "q": q,
-            "v": v,
-            "eventProcessedUtcTime": eventProcessedUtcTime,
-            "eventEnqueuedUtcTime": eventEnqueuedUtcTime,
-            "timestamp": timestamp  # Convert timestamp to milliseconds
-            }
-            #logging.info(event_data)
-            event.set(json.dumps(event_data))
-            logging.info("Event sent to Event Hub successfully.")
+        logging.warning(f"Inside try")
         return func.HttpResponse("Events sent to Event Hub successfully.", status_code=200)
     except Exception as e:
         logging.error(f"Error processing request: {str(e)}")
         return func.HttpResponse("Error processing request", status_code=500)
-
-
 
 # import azure.functions as func
 # from azure.eventhub.aio import EventHubProducerClient
@@ -224,3 +182,24 @@ def calculate(input_data):
             }
 
     return calculated_result
+
+@app.route(route="jesumehttp", auth_level=func.AuthLevel.ANONYMOUS)
+def jesumehttp(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+
+    name = req.params.get('name')
+    if not name:
+        try:
+            req_body = req.get_json()
+        except ValueError:
+            pass
+        else:
+            name = req_body.get('name')
+
+    if name:
+        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    else:
+        return func.HttpResponse(
+             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+             status_code=200
+        )
